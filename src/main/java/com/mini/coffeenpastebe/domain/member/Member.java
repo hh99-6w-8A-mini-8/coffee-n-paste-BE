@@ -3,10 +3,12 @@ package com.mini.coffeenpastebe.domain.member;
 import com.mini.coffeenpastebe.domain.Timestamped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Getter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor

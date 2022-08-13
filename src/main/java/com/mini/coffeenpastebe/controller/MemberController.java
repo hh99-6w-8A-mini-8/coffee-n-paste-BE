@@ -1,14 +1,14 @@
 package com.mini.coffeenpastebe.controller;
 
 import com.mini.coffeenpastebe.domain.TokenDto;
+import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.member.dto.LoginRequestDto;
+import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
 import com.mini.coffeenpastebe.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class MemberController {
     private final MemberService memberService;
 
     // 로그인
-    @GetMapping("/api/login")
+    @PostMapping("/api/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
 
         TokenDto token = memberService.login(loginRequestDto);
@@ -30,5 +30,13 @@ public class MemberController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .build();
+    }
+
+    @PostMapping("/api/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
+        Member member = memberService.register(registerRequestDto);
+
+        return ResponseEntity.ok()
+                .body(member);
     }
 }

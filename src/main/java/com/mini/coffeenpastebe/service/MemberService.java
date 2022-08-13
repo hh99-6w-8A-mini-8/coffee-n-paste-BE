@@ -3,8 +3,10 @@ package com.mini.coffeenpastebe.service;
 import com.mini.coffeenpastebe.domain.TokenDto;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.member.dto.LoginRequestDto;
+import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
 import com.mini.coffeenpastebe.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,5 +30,16 @@ public class MemberService {
 
         // 만든 토큰 리턴하기
         return new TokenDto("TestAccessToken+" + member.getMemberNickname(), "TestRefreshToken+" + member.getMemberNickname());
+    }
+
+    // 회원 가입
+    public Member register(RegisterRequestDto registerRequestDto) {
+        Member member = Member.builder()
+                .memberName(registerRequestDto.getMemberName())
+                .memberNickname(registerRequestDto.getMemberNickname())
+                .password(registerRequestDto.getMemberPassword())
+                .build();
+        memberRepository.save(member);
+        return member;
     }
 }

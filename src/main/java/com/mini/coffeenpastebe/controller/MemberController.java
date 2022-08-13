@@ -32,11 +32,22 @@ public class MemberController {
                 .build();
     }
 
+    // 회원가입
     @PostMapping("/api/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
         Member member = memberService.register(registerRequestDto);
 
         return ResponseEntity.ok()
                 .body(member);
+    }
+
+    // 중복된 아이디 검사
+    // 이미 존재하는 아이디라면 true
+    @GetMapping("/api/register")
+    public ResponseEntity<?> checkMemberName(@RequestParam("memberName") String memberName) {
+        boolean isMember = memberService.checkMemberName(memberName);
+
+        return ResponseEntity.ok()
+                .body(isMember);
     }
 }

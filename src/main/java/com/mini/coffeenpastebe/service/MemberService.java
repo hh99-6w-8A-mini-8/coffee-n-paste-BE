@@ -42,4 +42,9 @@ public class MemberService {
         memberRepository.save(member);
         return member;
     }
+
+    // 사용자 아이디 중복 검사
+    public boolean checkMemberName(String memberName) {
+        return memberRepository.existsByMemberName(memberName);
+    }
 }

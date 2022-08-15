@@ -25,11 +25,11 @@ public class MenuService {
 
     // Todo :: 메뉴 추가
     @Transactional
-    public ResponseDto<?> addMenu(String brandName, MenuRequestDto menuRequestDto) {
+    public Menu create(String brandName, MenuRequestDto menuRequestDto) {
 
         Brand brand = findBrand(brandName);
         if (brand == null) {
-            return ResponseDto.fail("등록되지 않은 브랜드입니다.");
+            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
         }
 
         Menu menu = Menu.builder()
@@ -40,61 +40,56 @@ public class MenuService {
                 .menuDesc(menuRequestDto.getMenuDesc())
                 .build();
 
-        menuRepository.save(menu);
-
-        return ResponseDto.success(menu);
+        return menuRepository.save(menu);
     }
 
     // Todo :: 메뉴 업데이트
     @Transactional
-    public ResponseDto<?> update(String brandName, Long menuId, MenuRequestDto menuRequestDto) {
+    public Menu update(String brandName, Long menuId, MenuRequestDto menuRequestDto) {
 
         Brand brand = findBrand(brandName);
         if (brand == null) {
-            return ResponseDto.fail("등록되지 않은 브랜드입니다.");
+            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
         }
 
         Menu menu = findMenu(menuId, brand);
         if (menu == null) {
-            return ResponseDto.fail("등록되지 않은 메뉴입니다.");
+            throw new IllegalArgumentException("등록되지 않은 메뉴입니다.");
         }
 
         menu.update(menuRequestDto);
-
-        return ResponseDto.success(menu);
+        return findMenu(menu.getId(), menu.getBrand());
     }
 
     // Todo :: 메뉴 삭제
     @Transactional
-    public ResponseDto<?> delete(String brandName, Long menuId) {
+    public String delete(String brandName, Long menuId) {
 
         Brand brand = findBrand(brandName);
         if (brand == null) {
-            return ResponseDto.fail("등록되지 않은 브랜드입니다.");
+            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
         }
 
         Menu menu = findMenu(menuId, brand);
         if (menu == null) {
-            return ResponseDto.fail("등록되지 않은 메뉴입니다.");
+            throw new IllegalArgumentException("등록되지 않은 메뉴입니다.");
         }
 
         menuRepository.delete(menu);
 
-        return ResponseDto.success("메뉴가 삭제되었습니다.");
+        return "메뉴가 삭제되었습니다.";
     }
 
     // Todo :: 브랜드 메뉴 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> findMenuList(String brandName) {
+    public List<Menu> findAll(String brandName) {
 
         Brand brand = findBrand(brandName);
         if (brand == null) {
-            return ResponseDto.fail("등록되지 않은 브랜드입니다.");
+            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
         }
 
-        List<Menu> menuList = menuRepository.findByBrand(brand);
-
-        return ResponseDto.success(menuList);
+        return menuRepository.findByBrand(brand);
     }
 
     @Transactional(readOnly = true)

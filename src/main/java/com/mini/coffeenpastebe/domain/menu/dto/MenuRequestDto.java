@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class MenuRequestDto {
     private String menuName;
     private String menuImg;
-    private String menuPrice;
+    private Long menuPrice;
     private String menuDesc;
 }

@@ -3,47 +3,46 @@ package com.mini.coffeenpastebe.controller;
 import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.menu.dto.MenuRequestDto;
 import com.mini.coffeenpastebe.service.MenuService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequiredArgsConstructor
 public class MenuController {
 
     private final MenuService menuService;
 
-    public MenuController(MenuService menuService) {
-        this.menuService = menuService;
-    }
-
-    @PostMapping("/menu/{brandName}")
-    public ResponseDto<?> addMenu(@PathVariable String brandName, @RequestBody MenuRequestDto menuRequestDto) {
+    @PostMapping("/api/menu/{brandName}")
+    public ResponseEntity<?> create(@PathVariable String brandName, @RequestBody MenuRequestDto menuRequestDto) {
         if (menuRequestDto.getMenuName() == null
         || menuRequestDto.getMenuImg() == null
         || menuRequestDto.getMenuPrice() == null
         || menuRequestDto.getMenuDesc() == null) {
-            return ResponseDto.fail("정보를 모두 입력해주세요.");
+            return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
         }
-       return menuService.addMenu(brandName, menuRequestDto);
+        return new ResponseEntity<>(menuService.create(brandName, menuRequestDto), HttpStatus.OK);
     }
 
-    @PutMapping("/menu/{brandName}/{menuId}")
-    public ResponseDto<?> updateMenu(@PathVariable String brandName, @PathVariable Long menuId, @RequestBody MenuRequestDto menuRequestDto) {
+    @PutMapping("/api/menu/{brandName}/{menuId}")
+    public ResponseEntity<?> update(@PathVariable String brandName, @PathVariable Long menuId, @RequestBody MenuRequestDto menuRequestDto) {
         if (menuRequestDto.getMenuName() == null
                 || menuRequestDto.getMenuImg() == null
                 || menuRequestDto.getMenuPrice() == null
                 || menuRequestDto.getMenuDesc() == null) {
-            return ResponseDto.fail("정보를 모두 입력해주세요.");
+            return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
         }
-        return menuService.update(brandName, menuId, menuRequestDto);
+        return new ResponseEntity<>(menuService.update(brandName, menuId, menuRequestDto), HttpStatus.OK);
     }
 
-    @DeleteMapping("/menu/{brandName}/{menuId}")
-    public ResponseDto<?> deleteMenu(@PathVariable String brandName, @PathVariable Long menuId) {
-        return menuService.delete(brandName, menuId);
+    @DeleteMapping("/api/menu/{brandName}/{menuId}")
+    public ResponseEntity<?> delete(@PathVariable String brandName, @PathVariable Long menuId) {
+        return new ResponseEntity<>(menuService.delete(brandName, menuId), HttpStatus.OK) ;
     }
 
-    @GetMapping("/menu/{brandName}")
-    public ResponseDto<?> findMenuList(@PathVariable String brandName) {
-        return menuService.findMenuList(brandName);
+    @GetMapping("/api/menu/{brandName}")
+    public ResponseEntity<?> findAll(@PathVariable String brandName) {
+        return new ResponseEntity<>(menuService.findAll(brandName), HttpStatus.OK) ;
     }
 }

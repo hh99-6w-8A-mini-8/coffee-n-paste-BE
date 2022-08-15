@@ -3,38 +3,39 @@ package com.mini.coffeenpastebe.controller;
 import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.brand.dto.BrandRequestDto;
 import com.mini.coffeenpastebe.service.BrandService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
-@RequestMapping("/api")
+@RequiredArgsConstructor
 public class BrandController {
     private final BrandService brandService;
 
-    public BrandController(BrandService brandService) {
-        this.brandService = brandService;
-    }
-
-    @PostMapping("/brand")
-    public ResponseDto<?> addBrand(@RequestBody BrandRequestDto brandRequestDto) {
+    @PostMapping("api/brand")
+    public ResponseEntity<?> create(@RequestBody BrandRequestDto brandRequestDto) {
         if (brandRequestDto.getBrandName() == null || brandRequestDto.getBrandImg() == null)
-            return ResponseDto.fail("정보를 모두 입력해주세요.");
-       return brandService.addBrand(brandRequestDto);
+            return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
+       return new ResponseEntity<>(brandService.create(brandRequestDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/brand/{id}")
-    public ResponseDto<?> update(@PathVariable Long id, @RequestBody BrandRequestDto brandRequestDto) {
+    @PutMapping("api/brand/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody BrandRequestDto brandRequestDto) {
         if (brandRequestDto.getBrandName() == null || brandRequestDto.getBrandImg() == null)
-            return ResponseDto.fail("정보를 모두 입력해주세요.");
-        return brandService.update(id, brandRequestDto);
+            return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(brandService.update(id, brandRequestDto), HttpStatus.OK) ;
     }
 
-    @DeleteMapping("/brand/{id}")
-    public String delete(@PathVariable Long id) {
-        return brandService.delete(id);
+    @DeleteMapping("api/brand/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return new ResponseEntity<>(brandService.delete(id), HttpStatus.OK);
     }
 
-    @GetMapping("/brand")
-    public ResponseDto<?> findAllBrand() {
-        return brandService.findBrandList();
+    @GetMapping("api/brand")
+    public ResponseEntity<?> findAll() {
+        return new ResponseEntity<>(brandService.findBrandList(), HttpStatus.OK);
     }
 }

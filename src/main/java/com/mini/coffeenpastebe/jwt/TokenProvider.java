@@ -21,6 +21,8 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -50,9 +52,14 @@ public class TokenProvider {
 
         long now = (new Date().getTime());
 
+        // claims 커스텀
+        Map<String, String> claims = new HashMap<>();
+        claims.put("memberName", member.getMemberName());
+        claims.put("memberNickname", member.getMemberNickname());
+
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
-                .setSubject(member.getMemberName())
+                .setClaims(claims)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();

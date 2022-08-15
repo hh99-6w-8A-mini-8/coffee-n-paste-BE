@@ -25,7 +25,7 @@ public class MemberController {
         // response header에 담기
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token.getAuthorization());
-        headers.add("refresh-token", token.getRefreshToken());
+        headers.add("Refresh-Token", token.getRefreshToken());
         // 200 코드로 리턴
         return ResponseEntity.ok()
                 .headers(headers)

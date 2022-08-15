@@ -86,7 +86,9 @@ public class TokenProvider {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 
-        UserDetails principal = userDetailsService.loadUserByUsername(claims.getSubject());
+        String memberName = (String) claims.get("memberName");
+
+        UserDetails principal = userDetailsService.loadUserByUsername(memberName);
 
         return new UsernamePasswordAuthenticationToken(principal, "",null);
     }

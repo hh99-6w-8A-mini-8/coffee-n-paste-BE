@@ -9,11 +9,13 @@ import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
 import com.mini.coffeenpastebe.domain.member.dto.MemberResponseDto;
 import com.mini.coffeenpastebe.jwt.TokenProvider;
 import com.mini.coffeenpastebe.repository.MemberRepository;
+import com.mini.coffeenpastebe.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // 로그인 로직
     public TokenDto login(LoginRequestDto loginRequestDto) {
@@ -83,5 +86,10 @@ public class MemberService {
                 .build();
 
         return checkMemberResponseDto;
+    }
+
+    @Transactional
+    public void logout(Member member) {
+        refreshTokenRepository.deleteByMember(member);
     }
 }

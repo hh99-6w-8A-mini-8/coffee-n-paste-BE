@@ -2,6 +2,8 @@ package com.mini.coffeenpastebe.controller;
 
 import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.TokenDto;
+import com.mini.coffeenpastebe.domain.UserDetailsImpl;
+import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.member.dto.CheckMemberResponseDto;
 import com.mini.coffeenpastebe.domain.member.dto.LoginRequestDto;
 import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
@@ -10,6 +12,8 @@ import com.mini.coffeenpastebe.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,5 +55,13 @@ public class MemberController {
 
         return ResponseEntity.ok()
                 .body(ResponseDto.success(responseDto));
+    }
+
+    @DeleteMapping("/api/logout")
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails) {
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+
+        memberService.logout(member);
+        return ResponseEntity.ok().build();
     }
 }

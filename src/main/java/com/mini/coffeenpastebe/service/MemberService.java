@@ -3,15 +3,14 @@ package com.mini.coffeenpastebe.service;
 import com.mini.coffeenpastebe.domain.TokenDto;
 import com.mini.coffeenpastebe.domain.UserDetailsImpl;
 import com.mini.coffeenpastebe.domain.member.Member;
+import com.mini.coffeenpastebe.domain.member.dto.CheckMemberResponseDto;
 import com.mini.coffeenpastebe.domain.member.dto.LoginRequestDto;
 import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
+import com.mini.coffeenpastebe.domain.member.dto.MemberResponseDto;
 import com.mini.coffeenpastebe.jwt.TokenProvider;
 import com.mini.coffeenpastebe.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,7 +50,7 @@ public class MemberService {
     }
 
     // 회원 가입
-    public Member register(RegisterRequestDto registerRequestDto) {
+    public MemberResponseDto register(RegisterRequestDto registerRequestDto) {
         // 비밀번호 암호화
         String password = passwordEncoder.encode(registerRequestDto.getMemberPassword());
 
@@ -64,11 +63,25 @@ public class MemberService {
 
         // 저장 후 리턴
         memberRepository.save(member);
-        return member;
+
+        // Response 리턴 값
+        MemberResponseDto memberResponseDto = MemberResponseDto.builder()
+                .id(member.getId())
+                .memberName(member.getMemberName())
+                .memberNickname(member.getMemberNickname())
+                .build();
+        return memberResponseDto;
     }
 
     // 사용자 아이디 중복 검사
-    public boolean checkMemberName(String memberName) {
-        return memberRepository.existsByMemberName(memberName);
+    public CheckMemberResponseDto checkMemberName(String memberName) {
+
+        boolean isMember = memberRepository.existsByMemberName(memberName);
+        CheckMemberResponseDto checkMemberResponseDto = CheckMemberResponseDto.builder()
+                .memberName(memberName)
+                .checkMember(isMember)
+                .build();
+
+        return checkMemberResponseDto;
     }
 }

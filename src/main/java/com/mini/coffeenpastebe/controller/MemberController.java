@@ -1,9 +1,11 @@
 package com.mini.coffeenpastebe.controller;
 
+import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.TokenDto;
-import com.mini.coffeenpastebe.domain.member.Member;
+import com.mini.coffeenpastebe.domain.member.dto.CheckMemberResponseDto;
 import com.mini.coffeenpastebe.domain.member.dto.LoginRequestDto;
 import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
+import com.mini.coffeenpastebe.domain.member.dto.MemberResponseDto;
 import com.mini.coffeenpastebe.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -35,19 +37,19 @@ public class MemberController {
     // 회원가입
     @PostMapping("/api/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
-        Member member = memberService.register(registerRequestDto);
+        MemberResponseDto member = memberService.register(registerRequestDto);
 
         return ResponseEntity.ok()
-                .body(member);
+                .body(ResponseDto.success(member));
     }
 
     // 중복된 아이디 검사
     // 이미 존재하는 아이디라면 true
     @GetMapping("/api/register")
     public ResponseEntity<?> checkMemberName(@RequestParam("memberName") String memberName) {
-        boolean isMember = memberService.checkMemberName(memberName);
+        CheckMemberResponseDto responseDto = memberService.checkMemberName(memberName);
 
         return ResponseEntity.ok()
-                .body(isMember);
+                .body(ResponseDto.success(responseDto));
     }
 }

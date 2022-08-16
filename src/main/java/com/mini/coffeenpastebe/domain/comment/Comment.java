@@ -1,6 +1,7 @@
 package com.mini.coffeenpastebe.domain.comment;
 
 import com.mini.coffeenpastebe.domain.Timestamped;
+import com.mini.coffeenpastebe.domain.comment.dto.CommentRequestDto;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.post.Post;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,9 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "post_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
+
+    public void update(CommentRequestDto requestDto) {
+        this.content = requestDto.getCommentContent();
+    }
 
 }

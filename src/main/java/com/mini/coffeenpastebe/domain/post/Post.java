@@ -1,6 +1,7 @@
 package com.mini.coffeenpastebe.domain.post;
 
 import com.mini.coffeenpastebe.domain.Timestamped;
+import com.mini.coffeenpastebe.domain.comment.Comment;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -36,6 +38,9 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
     private String postImg;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     public void update(PostRequestDto postRequestDto) {
         this.content = postRequestDto.getContent();

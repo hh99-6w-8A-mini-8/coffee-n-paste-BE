@@ -1,13 +1,12 @@
 package com.mini.coffeenpastebe.controller;
 
-import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.TokenDto;
 import com.mini.coffeenpastebe.domain.UserDetailsImpl;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.member.dto.CheckMemberResponseDto;
 import com.mini.coffeenpastebe.domain.member.dto.LoginRequestDto;
-import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
 import com.mini.coffeenpastebe.domain.member.dto.MemberResponseDto;
+import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
 import com.mini.coffeenpastebe.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,16 +36,16 @@ public class MemberController {
         // 200 코드로 리턴
         return ResponseEntity.ok()
                 .headers(headers)
-                .build();
+                .body(Map.entry("msg", "로그인 완료"));
     }
 
     // 회원가입
     @PostMapping("/api/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
-        MemberResponseDto member = memberService.register(registerRequestDto);
+        MemberResponseDto memberResponseDto = memberService.register(registerRequestDto);
 
         return ResponseEntity.ok()
-                .body(ResponseDto.success(member));
+                .body(memberResponseDto);
     }
 
     // 중복된 아이디 검사
@@ -54,7 +55,7 @@ public class MemberController {
         CheckMemberResponseDto responseDto = memberService.checkMemberName(memberName);
 
         return ResponseEntity.ok()
-                .body(ResponseDto.success(responseDto));
+                .body(responseDto);
     }
 
     @DeleteMapping("/api/logout")
@@ -62,6 +63,7 @@ public class MemberController {
         Member member = ((UserDetailsImpl) userDetails).getMember();
 
         memberService.logout(member);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(Map.entry("msg", "로그아웃 완료"));
     }
 }

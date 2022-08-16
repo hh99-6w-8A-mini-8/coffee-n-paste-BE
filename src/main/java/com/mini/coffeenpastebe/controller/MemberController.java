@@ -15,6 +15,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -34,7 +36,7 @@ public class MemberController {
         // 200 코드로 리턴
         return ResponseEntity.ok()
                 .headers(headers)
-                .build();
+                .body(Map.entry("msg", "로그인 완료"));
     }
 
     // 회원가입
@@ -61,6 +63,7 @@ public class MemberController {
         Member member = ((UserDetailsImpl) userDetails).getMember();
 
         memberService.logout(member);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(Map.entry("msg", "로그아웃 완료"));
     }
 }

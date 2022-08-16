@@ -71,6 +71,6 @@ public class CommentController {
 
         return ResponseEntity
                 .ok()
-                .body(Map.entry("commentId", commentId));
+                .body(Map.entry("msg", "댓글 삭제 완료, commendId: " + commentId));
     }
 }

@@ -1,6 +1,5 @@
 package com.mini.coffeenpastebe.service;
 
-import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.brand.Brand;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.menu.dto.MenuRequestDto;
@@ -10,7 +9,6 @@ import com.mini.coffeenpastebe.repository.MenuRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +27,7 @@ public class MenuService {
     @Transactional
     public MenuResponseDto create(String brandName, MenuRequestDto menuRequestDto) {
 
-        Brand brand = findBrand(brandName);
-        if (brand == null) {
-            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
-        }
+        Brand brand = isPresentBrand(brandName);
 
         Menu menu = Menu.builder()
                 .brand(brand)
@@ -53,33 +48,21 @@ public class MenuService {
     @Transactional
     public Menu update(String brandName, Long menuId, MenuRequestDto menuRequestDto) {
 
-        Brand brand = findBrand(brandName);
-        if (brand == null) {
-            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
-        }
+        Brand brand = isPresentBrand(brandName);
 
-        Menu menu = findMenu(menuId, brand);
-        if (menu == null) {
-            throw new IllegalArgumentException("등록되지 않은 메뉴입니다.");
-        }
+        Menu menu = isPresentMenu(menuId, brand);
 
         menu.update(menuRequestDto);
-        return findMenu(menu.getId(), menu.getBrand());
+        return isPresentMenu(menu.getId(), menu.getBrand());
     }
 
     // Todo :: 메뉴 삭제
     @Transactional
     public String delete(String brandName, Long menuId) {
 
-        Brand brand = findBrand(brandName);
-        if (brand == null) {
-            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
-        }
+        Brand brand = isPresentBrand(brandName);
 
-        Menu menu = findMenu(menuId, brand);
-        if (menu == null) {
-            throw new IllegalArgumentException("등록되지 않은 메뉴입니다.");
-        }
+        Menu menu = isPresentMenu(menuId, brand);
 
         menuRepository.delete(menu);
 
@@ -90,23 +73,20 @@ public class MenuService {
     @Transactional(readOnly = true)
     public List<Menu> findAll(String brandName) {
 
-        Brand brand = findBrand(brandName);
-        if (brand == null) {
-            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
-        }
+        Brand brand = isPresentBrand(brandName);
 
         return menuRepository.findByBrand(brand);
     }
 
     @Transactional(readOnly = true)
-    public Brand findBrand(String brandName) {
+    public Brand isPresentBrand(String brandName) {
         Optional<Brand> brand = brandRepository.findByBrandName(brandName);
-        return brand.orElse(null);
+        return brand.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 브랜드입니다."));
     }
 
     @Transactional(readOnly = true)
-    public Menu findMenu(Long menuId, Brand brand) {
+    public Menu isPresentMenu(Long menuId, Brand brand) {
         Optional<Menu> menu = menuRepository.findByIdAndBrand(menuId, brand);
-        return menu.orElse(null);
+        return menu.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 메뉴입니다."));
     }
 }

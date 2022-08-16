@@ -33,9 +33,9 @@ public class PostService {
     @Transactional
     public Post create(PostRequestDto postRequestDto, Member member) {
 
-
-        Brand brand = brandRepository.findById(postRequestDto.getBrandId()).orElse(null);
-        Menu menu = menuRepository.findByIdAndBrand(postRequestDto.getMenuId(), brand).orElse(null);
+        Brand brand = brandRepository.findById(postRequestDto.getBrandId()).orElseThrow(
+                ()->new IllegalArgumentException("등록되지 않은 브랜드입니다."));
+        Menu menu = isPresentMenu(postRequestDto.getMenuId(), brand);
 
         Post post = Post.builder()
                 .member(member)
@@ -51,9 +51,6 @@ public class PostService {
     public PostDetailsResponseDto update(Long postId, PostRequestDto postRequestDto, Member member) {
 
         Post post = isPresentPost(postId);
-        if (null == post) {
-            throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다.");
-        }
 
         if (post.validateMember(member)) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 수정할 권한이 있습니다.");
@@ -78,9 +75,6 @@ public class PostService {
     public PostDetailsResponseDto read(Long postId) {
 
         Post post = isPresentPost(postId);
-        if (post == null) {
-            throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다.");
-        }
 
         return PostDetailsResponseDto.builder()
                 .postId(post.getId())
@@ -147,7 +141,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostBasicResponseDto> findAllByBrand(String brandName) {
-        Brand brandSelected = brandRepository.findByBrandName(brandName).orElse(null);
+        Brand brandSelected = isPresentBrand(brandName);
         if (brandSelected == null) {
             throw new IllegalArgumentException("해당 브랜드가 존재하지 않습니다");
         }
@@ -174,9 +168,7 @@ public class PostService {
     @Transactional
     public String delete(Long postId, Member member) {
         Post post = isPresentPost(postId);
-        if (null == post) {
-            throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다");
-        }
+
         if(post.validateMember(member)) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 권한이 있습니다");
         }
@@ -185,11 +177,21 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Post isPresentPost(Long id) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        return optionalPost.orElse(null);
+    public Brand isPresentBrand(String brandName) {
+        Optional<Brand> brand = brandRepository.findByBrandName(brandName);
+        return brand.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 브랜드입니다."));
     }
 
+    @Transactional(readOnly = true)
+    public Menu isPresentMenu(Long menuId, Brand brand) {
+        Optional<Menu> menu = menuRepository.findByIdAndBrand(menuId, brand);
+        return menu.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 메뉴입니다."));
+    }
 
+    @Transactional(readOnly = true)
+    public Post isPresentPost(Long id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        return optionalPost.orElseThrow(()-> new IllegalArgumentException("등록되지 않은 게시물입니다."));
+    }
 
 }

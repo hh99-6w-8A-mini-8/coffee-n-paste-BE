@@ -1,20 +1,15 @@
 package com.mini.coffeenpastebe.service;
 
-import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.brand.Brand;
 import com.mini.coffeenpastebe.domain.brand.dto.BrandRequestDto;
 import com.mini.coffeenpastebe.domain.brand.dto.BrandResponseDto;
-import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.menu.dto.MenuResponseDto;
-import com.mini.coffeenpastebe.jwt.TokenProvider;
 import com.mini.coffeenpastebe.repository.BrandRepository;
-import com.mini.coffeenpastebe.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +19,6 @@ import java.util.Optional;
 public class BrandService {
 
     private final BrandRepository brandRepository;
-    private final MenuRepository menuRepository;
 
 
     // Todo :: 브랜드 등록
@@ -42,12 +36,9 @@ public class BrandService {
     // Todo :: 브랜드 이미지 수정
     @Transactional
     public Brand update(Long id, BrandRequestDto brandRequestDto){
-        Brand brand = findBrand(id);
-        if (brand == null) {
-            throw new IllegalArgumentException("등록되지 않은 브랜드입니다.");
-        }
+        Brand brand = isPresentBrand(id);
         brand.update(brandRequestDto);
-        Brand updatedBrand = findBrand(id);
+        Brand updatedBrand = isPresentBrand(id);
         return updatedBrand;
     }
 
@@ -85,8 +76,8 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public Brand findBrand(Long id) {
+    public Brand isPresentBrand(Long id) {
         Optional<Brand> optionalBrand = brandRepository.findById(id);
-        return optionalBrand.orElse(null);
+        return optionalBrand.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 브랜드입니다."));
     }
 }

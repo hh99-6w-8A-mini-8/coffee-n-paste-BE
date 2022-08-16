@@ -26,7 +26,7 @@ public class CommentService {
 
     // Comment List 조회
     public List<CommentListResponseDto> getComment(Long postId) {
-        List<Comment> comments = commentRepository.findByPost_PostId(postId);
+        List<Comment> comments = commentRepository.findByPost_Id(postId);
         if (null == comments) {
             throw new IllegalArgumentException("등록되지 않은 Comment 입니다.");
         }
@@ -36,7 +36,7 @@ public class CommentService {
             commentListResponseDto.add(
                     CommentListResponseDto.builder()
                             .postId(postId)
-                            .comments(commentRepository.findByPost_PostId(comment.getPost().getId()).stream().map(CommentResponseDto::new).collect(Collectors.toList()))
+                            .comments(commentRepository.findByPost_Id(comment.getPost().getId()).stream().map(CommentResponseDto::new).collect(Collectors.toList()))
                             .build()
             );
         }
@@ -59,7 +59,9 @@ public class CommentService {
         CommentResponseDto commentResponseDto = CommentResponseDto.builder()
                 .commentId(comment.getId())
                 .memberName(comment.getMember().getMemberName())
+                .memberNickname(comment.getMember().getMemberNickname())
                 .commentContent(comment.getContent())
+                .createdAt(comment.getCreatedAt())
                 .build();
 
         return commentResponseDto;

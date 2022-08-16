@@ -1,13 +1,12 @@
 package com.mini.coffeenpastebe.controller;
 
-import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.TokenDto;
 import com.mini.coffeenpastebe.domain.UserDetailsImpl;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.member.dto.CheckMemberResponseDto;
 import com.mini.coffeenpastebe.domain.member.dto.LoginRequestDto;
-import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
 import com.mini.coffeenpastebe.domain.member.dto.MemberResponseDto;
+import com.mini.coffeenpastebe.domain.member.dto.RegisterRequestDto;
 import com.mini.coffeenpastebe.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -41,10 +40,10 @@ public class MemberController {
     // 회원가입
     @PostMapping("/api/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDto registerRequestDto) {
-        MemberResponseDto member = memberService.register(registerRequestDto);
+        MemberResponseDto memberResponseDto = memberService.register(registerRequestDto);
 
         return ResponseEntity.ok()
-                .body(ResponseDto.success(member));
+                .body(memberResponseDto);
     }
 
     // 중복된 아이디 검사
@@ -54,7 +53,7 @@ public class MemberController {
         CheckMemberResponseDto responseDto = memberService.checkMemberName(memberName);
 
         return ResponseEntity.ok()
-                .body(ResponseDto.success(responseDto));
+                .body(responseDto);
     }
 
     @DeleteMapping("/api/logout")

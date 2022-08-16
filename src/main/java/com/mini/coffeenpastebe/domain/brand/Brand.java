@@ -1,12 +1,15 @@
 package com.mini.coffeenpastebe.domain.brand;
 
 import com.mini.coffeenpastebe.domain.brand.dto.BrandRequestDto;
+import com.mini.coffeenpastebe.domain.menu.Menu;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -26,9 +29,8 @@ public class Brand {
     @Column(name = "BRAND_IMG", nullable = false)
     private String brandImg;
 
-    // starbucks main banner exam
-    // www.aseanexpress.co.kr/data/photos/20211043/art_16350988026128_3c8e09.png
-    // https://image.istarbucks.co.kr/cardImg/20220711/009207_WEB.png
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Menu> menuList;
 
     public void update (BrandRequestDto brandRequestDto) {
         this.brandName = brandRequestDto.getBrandName();

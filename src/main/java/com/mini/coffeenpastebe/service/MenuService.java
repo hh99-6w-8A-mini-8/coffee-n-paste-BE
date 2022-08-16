@@ -4,11 +4,13 @@ import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.brand.Brand;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.menu.dto.MenuRequestDto;
+import com.mini.coffeenpastebe.domain.menu.dto.MenuResponseDto;
 import com.mini.coffeenpastebe.repository.BrandRepository;
 import com.mini.coffeenpastebe.repository.MenuRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +27,7 @@ public class MenuService {
 
     // Todo :: 메뉴 추가
     @Transactional
-    public Menu create(String brandName, MenuRequestDto menuRequestDto) {
+    public MenuResponseDto create(String brandName, MenuRequestDto menuRequestDto) {
 
         Brand brand = findBrand(brandName);
         if (brand == null) {
@@ -39,8 +41,12 @@ public class MenuService {
                 .menuPrice(menuRequestDto.getMenuPrice())
                 .menuDesc(menuRequestDto.getMenuDesc())
                 .build();
+        menuRepository.save(menu);
 
-        return menuRepository.save(menu);
+        return MenuResponseDto.builder()
+                .menuId(menu.getId())
+                .menuName(menu.getMenuName())
+                .build();
     }
 
     // Todo :: 메뉴 업데이트

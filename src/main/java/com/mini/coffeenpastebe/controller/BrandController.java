@@ -34,7 +34,7 @@ public class BrandController {
         return new ResponseEntity<>(brandService.delete(id), HttpStatus.OK);
     }
 
-    @GetMapping("/api/brand")
+    @GetMapping("/api/brands")
     public ResponseEntity<?> findAll() {
         return new ResponseEntity<>(brandService.findBrandList(), HttpStatus.OK);
     }

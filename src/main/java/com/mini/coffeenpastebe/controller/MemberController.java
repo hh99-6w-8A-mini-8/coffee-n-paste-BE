@@ -28,15 +28,9 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
 
         TokenDto token = memberService.login(loginRequestDto);
-
-        // response header에 담기
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token.getAuthorization());
-        headers.add("Refresh-Token", token.getRefreshToken());
         // 200 코드로 리턴
         return ResponseEntity.ok()
-                .headers(headers)
-                .body(Map.entry("msg", "로그인 완료"));
+                .body(token);
     }
 
     // 회원가입

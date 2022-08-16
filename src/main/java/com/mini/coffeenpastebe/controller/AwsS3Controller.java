@@ -19,7 +19,7 @@ public class AwsS3Controller {
     private final AwsS3Service awsS3Service;
 
     @PostMapping("/api/post/upload-image")
-    public ResponseEntity<?> upload(@RequestPart("file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<?> upload(@RequestPart("image") MultipartFile multipartFile) throws IOException {
         return ResponseEntity.ok().body(awsS3Service.upload(multipartFile));
     }
 

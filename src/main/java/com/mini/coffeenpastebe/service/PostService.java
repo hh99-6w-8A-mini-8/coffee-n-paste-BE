@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +33,6 @@ public class PostService {
         Post post = Post.builder()
                 .member(member)
                 .menu(menu)
-                .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
                 .postImg(postRequestDto.getPostImg())
                 .build();
@@ -72,17 +70,17 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Object findAllMy(Member member) {
+    public List<Post> findAllMy(Member member) {
         return postRepository.findAllByMember(member);
     }
 
     @Transactional(readOnly = true)
-    public Object findAllByBrand(String brandName) {
+    public List<Post> findAllByBrand(String brandName) {
         Brand brandSelected = brandRepository.findByBrandName(brandName).orElse(null);
         if (brandSelected == null) {
             throw new IllegalArgumentException("해당 브랜드가 존재하지 않습니다");
         }
-        return postRepository.findAllByBrand(brandSelected);
+        return postRepository.findAllByMenu_Brand(brandSelected);
     }
 
 

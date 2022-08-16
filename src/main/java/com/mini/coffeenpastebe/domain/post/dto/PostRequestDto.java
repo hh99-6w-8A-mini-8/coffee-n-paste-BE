@@ -8,7 +8,6 @@ import lombok.Setter;
 public class PostRequestDto {
     private Long brandId;
     private Long menuId;
-    private String title;
     private String content;
     private String postImg;
 }

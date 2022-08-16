@@ -13,5 +13,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByMember(Member member);
 
-    List<Post> findAllByBrand(Brand brandSelected);
+    List<Post> findAllByMenu_Brand(Brand brandSelected);
 }

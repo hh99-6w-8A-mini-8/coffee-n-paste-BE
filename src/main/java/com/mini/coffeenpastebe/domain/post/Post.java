@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Builder
 @Getter
@@ -31,16 +32,12 @@ public class Post extends Timestamped {
     private Menu menu;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
     private String postImg;
 
     public void update(PostRequestDto postRequestDto) {
-        this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
         this.postImg = postRequestDto.getPostImg();
     }

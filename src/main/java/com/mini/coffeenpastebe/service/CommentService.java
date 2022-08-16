@@ -26,10 +26,10 @@ public class CommentService {
 
     // Comment List 조회
     public List<CommentListResponseDto> getComment(Long postId) {
-        List<Comment> comments = commentRepository.findByPost_Id(postId);
-        if (null == comments) {
-            throw new IllegalArgumentException("등록되지 않은 Comment 입니다.");
-        }
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        List<Comment> comments = commentRepository.findByPost_Id(post.getId());
         List<CommentListResponseDto> commentListResponseDto = new ArrayList<>();
 
         for (Comment comment : comments) {
@@ -102,7 +102,7 @@ public class CommentService {
 
         // 댓글 작성자와 로그인한 사용자가 일치하는지 확인
         if (!comment.getMember().getId().equals(member.getId())) {
-            throw new RuntimeException("댓글 작성자만 삭제할 수 있습니다.");
+            throw new IllegalArgumentException("댓글 작성자만 삭제할 수 있습니다.");
         }
 
         // 삭제

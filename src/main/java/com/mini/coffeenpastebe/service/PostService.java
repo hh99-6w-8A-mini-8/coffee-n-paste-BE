@@ -1,13 +1,15 @@
 package com.mini.coffeenpastebe.service;
 
 import com.mini.coffeenpastebe.domain.brand.Brand;
+import com.mini.coffeenpastebe.domain.comment.dto.CommentResponseDto;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.post.Post;
-import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
-import com.mini.coffeenpastebe.domain.post.dto.PostDetailsResponseDto;
 import com.mini.coffeenpastebe.domain.post.dto.PostBasicResponseDto;
+import com.mini.coffeenpastebe.domain.post.dto.PostDetailsResponseDto;
+import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
 import com.mini.coffeenpastebe.repository.BrandRepository;
+import com.mini.coffeenpastebe.repository.CommentRepository;
 import com.mini.coffeenpastebe.repository.MenuRepository;
 import com.mini.coffeenpastebe.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MenuRepository menuRepository;
     private final BrandRepository brandRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public Post create(PostRequestDto postRequestDto, Member member) {
@@ -59,12 +63,14 @@ public class PostService {
 
         return PostDetailsResponseDto.builder()
                 .postId(post.getId())
+                .memberName(post.getMember().getMemberName())
                 .memberNickName(post.getMember().getMemberNickname())
                 .brandName(post.getMenu().getBrand().getBrandName())
                 .menuName(post.getMenu().getMenuName())
                 .postContent(post.getContent())
                 .postImg(post.getPostImg())
                 .createAt(post.getCreatedAt())
+                .comments(commentRepository.findByPost_Id(post.getId()).stream().map(CommentResponseDto::new).collect(Collectors.toList()))
                 .build();
     }
 
@@ -85,9 +91,9 @@ public class PostService {
                 .postContent(post.getContent())
                 .postImg(post.getPostImg())
                 .createAt(post.getCreatedAt())
+                .comments(commentRepository.findByPost_Id(post.getId()).stream().map(CommentResponseDto::new).collect(Collectors.toList()))
                 .build();
         // comment 완료시 추가.
-
     }
 
     @Transactional(readOnly = true)

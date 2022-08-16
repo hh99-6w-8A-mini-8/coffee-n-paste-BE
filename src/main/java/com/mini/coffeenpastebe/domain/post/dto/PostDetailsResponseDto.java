@@ -1,6 +1,7 @@
 package com.mini.coffeenpastebe.domain.post.dto;
 
 import com.mini.coffeenpastebe.domain.comment.dto.CommentListResponseDto;
+import com.mini.coffeenpastebe.domain.comment.dto.CommentResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class PostDetailsResponseDto {
     private String brandName;
     private String menuName;
     private String postContent;
-    private List<CommentListResponseDto> commentListResponseDtoList;
     private String postImg;
     private LocalDateTime createAt;
+    private List<CommentResponseDto> comments;
 }

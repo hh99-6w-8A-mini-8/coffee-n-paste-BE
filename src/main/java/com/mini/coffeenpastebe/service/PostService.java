@@ -5,6 +5,8 @@ import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.post.Post;
 import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
+import com.mini.coffeenpastebe.domain.post.dto.PostResponseDto;
+import com.mini.coffeenpastebe.domain.post.dto.Posts;
 import com.mini.coffeenpastebe.repository.BrandRepository;
 import com.mini.coffeenpastebe.repository.MenuRepository;
 import com.mini.coffeenpastebe.repository.PostRepository;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,11 +39,12 @@ public class PostService {
                 .content(postRequestDto.getContent())
                 .postImg(postRequestDto.getPostImg())
                 .build();
+
         return postRepository.save(post);
     }
 
     @Transactional
-    public Post update(Long postId, PostRequestDto postRequestDto, Member member) {
+    public PostResponseDto update(Long postId, PostRequestDto postRequestDto, Member member) {
 
         Post post = isPresentPost(postId);
         if (null == post) {
@@ -52,35 +56,113 @@ public class PostService {
         }
 
         post.update(postRequestDto);
-        return post;
+
+        return PostResponseDto.builder()
+                .postId(post.getId())
+                .memberNickName(post.getMember().getMemberNickname())
+                .brandName(post.getMenu().getBrand().getBrandName())
+                .menuName(post.getMenu().getMenuName())
+                .postContent(post.getContent())
+                .postImg(post.getPostImg())
+                .createAt(post.getCreatedAt())
+                .build();
     }
 
     @Transactional(readOnly = true)
-    public Post read(Long postId) {
+    public PostResponseDto read(Long postId) {
+
         Post post = isPresentPost(postId);
-        if (null == post) {
-            throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다");
+        if (post == null) {
+            throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다.");
         }
-        return post;
+
+        return PostResponseDto.builder()
+                .postId(post.getId())
+                .memberName(post.getMember().getMemberName())
+                .memberNickName(post.getMember().getMemberNickname())
+                .brandName(post.getMenu().getBrand().getBrandName())
+                .menuName(post.getMenu().getMenuName())
+                .postContent(post.getContent())
+                .postImg(post.getPostImg())
+                .createAt(post.getCreatedAt())
+                .build();
+        // comment 완료시 추가.
+
     }
 
     @Transactional(readOnly = true)
-    public List<Post> findAll() {
-        return postRepository.findAllByOrderByCreatedAtDesc();
+    public List<Posts> findAll() {
+
+        List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
+
+        List<Posts> posts = new ArrayList<>();
+
+        for (Post post : postList) {
+
+            posts.add(
+                    Posts.builder()
+                            .postId(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberNickname(post.getMember().getMemberNickname())
+                            .brandName(post.getMenu().getBrand().getBrandName())
+                            .menuName(post.getMenu().getMenuName())
+                            .postImg(post.getPostImg())
+                            .createAt(post.getCreatedAt())
+                            .build()
+            );
+        }
+
+        return posts;
     }
 
     @Transactional(readOnly = true)
-    public List<Post> findAllMy(Member member) {
-        return postRepository.findAllByMember(member);
+    public List<Posts> findAllMy(Member member) {
+
+        List<Post> postList = postRepository.findAllByMember(member);
+
+        List<Posts> posts = new ArrayList<>();
+
+        for (Post post : postList) {
+            posts.add(
+                    Posts.builder()
+                            .postId(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberNickname(post.getMember().getMemberNickname())
+                            .brandName(post.getMenu().getBrand().getBrandName())
+                            .menuName(post.getMenu().getMenuName())
+                            .postImg(post.getPostImg())
+                            .createAt(post.getCreatedAt())
+                            .build()
+            );
+        }
+
+        return posts;
     }
 
     @Transactional(readOnly = true)
-    public List<Post> findAllByBrand(String brandName) {
+    public List<Posts> findAllByBrand(String brandName) {
         Brand brandSelected = brandRepository.findByBrandName(brandName).orElse(null);
         if (brandSelected == null) {
             throw new IllegalArgumentException("해당 브랜드가 존재하지 않습니다");
         }
-        return postRepository.findAllByMenu_Brand(brandSelected);
+        List<Post> postList =  postRepository.findAllByMenu_Brand(brandSelected);
+        List<Posts> posts = new ArrayList<>();
+
+        for (Post post : postList) {
+            posts.add(
+                    Posts.builder()
+                            .postId(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberNickname(post.getMember().getMemberNickname())
+                            .brandName(post.getMenu().getBrand().getBrandName())
+                            .menuName(post.getMenu().getMenuName())
+                            .postImg(post.getPostImg())
+                            .createAt(post.getCreatedAt())
+                            .build()
+            );
+        }
+
+        return posts;
     }
 
 

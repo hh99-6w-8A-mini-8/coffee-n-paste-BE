@@ -11,13 +11,12 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostResponseDto {
+public class PostBasicResponseDto {
     private Long postId;
     private String memberName;
-    private String memberNickName;
+    private String memberNickname;
     private String brandName;
     private String menuName;
-    private String postContent;
     private String postImg;
     private LocalDateTime createAt;
 }

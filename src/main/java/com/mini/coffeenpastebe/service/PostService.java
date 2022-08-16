@@ -5,8 +5,8 @@ import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.post.Post;
 import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
-import com.mini.coffeenpastebe.domain.post.dto.PostResponseDto;
-import com.mini.coffeenpastebe.domain.post.dto.Posts;
+import com.mini.coffeenpastebe.domain.post.dto.PostDetailsResponseDto;
+import com.mini.coffeenpastebe.domain.post.dto.PostBasicResponseDto;
 import com.mini.coffeenpastebe.repository.BrandRepository;
 import com.mini.coffeenpastebe.repository.MenuRepository;
 import com.mini.coffeenpastebe.repository.PostRepository;
@@ -44,7 +44,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto update(Long postId, PostRequestDto postRequestDto, Member member) {
+    public PostDetailsResponseDto update(Long postId, PostRequestDto postRequestDto, Member member) {
 
         Post post = isPresentPost(postId);
         if (null == post) {
@@ -57,7 +57,7 @@ public class PostService {
 
         post.update(postRequestDto);
 
-        return PostResponseDto.builder()
+        return PostDetailsResponseDto.builder()
                 .postId(post.getId())
                 .memberNickName(post.getMember().getMemberNickname())
                 .brandName(post.getMenu().getBrand().getBrandName())
@@ -69,14 +69,14 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto read(Long postId) {
+    public PostDetailsResponseDto read(Long postId) {
 
         Post post = isPresentPost(postId);
         if (post == null) {
             throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다.");
         }
 
-        return PostResponseDto.builder()
+        return PostDetailsResponseDto.builder()
                 .postId(post.getId())
                 .memberName(post.getMember().getMemberName())
                 .memberNickName(post.getMember().getMemberNickname())
@@ -91,16 +91,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<Posts> findAll() {
+    public List<PostBasicResponseDto> findAll() {
 
         List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
 
-        List<Posts> posts = new ArrayList<>();
+        List<PostBasicResponseDto> posts = new ArrayList<>();
 
         for (Post post : postList) {
 
             posts.add(
-                    Posts.builder()
+                    PostBasicResponseDto.builder()
                             .postId(post.getId())
                             .memberName(post.getMember().getMemberName())
                             .memberNickname(post.getMember().getMemberNickname())
@@ -116,15 +116,15 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<Posts> findAllMy(Member member) {
+    public List<PostBasicResponseDto> findAllMy(Member member) {
 
         List<Post> postList = postRepository.findAllByMember(member);
 
-        List<Posts> posts = new ArrayList<>();
+        List<PostBasicResponseDto> posts = new ArrayList<>();
 
         for (Post post : postList) {
             posts.add(
-                    Posts.builder()
+                    PostBasicResponseDto.builder()
                             .postId(post.getId())
                             .memberName(post.getMember().getMemberName())
                             .memberNickname(post.getMember().getMemberNickname())
@@ -140,17 +140,17 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<Posts> findAllByBrand(String brandName) {
+    public List<PostBasicResponseDto> findAllByBrand(String brandName) {
         Brand brandSelected = brandRepository.findByBrandName(brandName).orElse(null);
         if (brandSelected == null) {
             throw new IllegalArgumentException("해당 브랜드가 존재하지 않습니다");
         }
         List<Post> postList =  postRepository.findAllByMenu_Brand(brandSelected);
-        List<Posts> posts = new ArrayList<>();
+        List<PostBasicResponseDto> posts = new ArrayList<>();
 
         for (Post post : postList) {
             posts.add(
-                    Posts.builder()
+                    PostBasicResponseDto.builder()
                             .postId(post.getId())
                             .memberName(post.getMember().getMemberName())
                             .memberNickname(post.getMember().getMemberNickname())

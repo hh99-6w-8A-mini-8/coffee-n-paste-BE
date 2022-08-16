@@ -165,7 +165,18 @@ public class PostService {
         return posts;
     }
 
-
+    @Transactional
+    public String delete(Long postId, Member member) {
+        Post post = isPresentPost(postId);
+        if (null == post) {
+            throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다");
+        }
+        if(post.validateMember(member)) {
+            throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 권한이 있습니다");
+        }
+        postRepository.delete(post);
+        return "게시물이 정상적으로 삭제되었습니다.";
+    }
 
     @Transactional(readOnly = true)
     public Post isPresentPost(Long id) {

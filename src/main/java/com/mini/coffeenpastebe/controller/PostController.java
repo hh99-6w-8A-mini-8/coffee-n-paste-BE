@@ -59,4 +59,11 @@ public class PostController {
     public ResponseEntity<?> findAllByBrand(@RequestParam("brand") String brand) {
         return new ResponseEntity<>(postService.findAllByBrand(brand), HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/api/post/{postId}")
+    public ResponseEntity<?> delete(@PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails) {
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+        return new ResponseEntity<>(postService.delete(postId, member), HttpStatus.OK);
+    }
+
 }

@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,5 +40,37 @@ public class CommentController {
 
         return ResponseEntity.ok()
                 .body(commentResponseDto);
+    }
+
+    // 댓글 등록
+    @PostMapping("/api/comment")
+    public ResponseEntity<?> createComment(
+            @RequestParam("post-id") Long postId,
+            @RequestBody CommentRequestDto commentRequestDto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        // 로그인된 사용자 정보 가져오기
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+
+        CommentResponseDto responseDto = commentService.createComment(postId, commentRequestDto, member);
+
+        return ResponseEntity
+                .ok()
+                .body(responseDto);
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/api/comment/{commentId}")
+    public ResponseEntity<?> deleteComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+
+        commentService.removeComment(commentId, member);
+
+        return ResponseEntity
+                .ok()
+                .body(Map.entry("commentId", commentId));
     }
 }

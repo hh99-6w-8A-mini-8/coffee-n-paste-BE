@@ -5,6 +5,7 @@ import com.mini.coffeenpastebe.domain.comment.dto.CommentListResponseDto;
 import com.mini.coffeenpastebe.domain.comment.dto.CommentRequestDto;
 import com.mini.coffeenpastebe.domain.comment.dto.CommentResponseDto;
 import com.mini.coffeenpastebe.domain.member.Member;
+import com.mini.coffeenpastebe.domain.post.Post;
 import com.mini.coffeenpastebe.repository.CommentRepository;
 import com.mini.coffeenpastebe.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
+
+    private final PostRepository postRepository;
 
     private final CommentRepository commentRepository;
 
@@ -61,5 +63,47 @@ public class CommentService {
                 .build();
 
         return commentResponseDto;
+    }
+
+    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, Member member) {
+        // 게시글 확인
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> {
+                    throw new IllegalArgumentException("존재하지 않는 게시글 입니다. postId: " + postId);
+                });
+
+        // 댓글 생성
+        Comment comment = Comment.builder()
+                .post(post)
+                .member(member)
+                .content(requestDto.getCommentContent())
+                .build();
+
+        // 저장
+        commentRepository.save(comment);
+
+        // commentResponseDto로 리턴
+        return CommentResponseDto.builder()
+                .commentId(comment.getId())
+                .memberName(member.getMemberName())
+                .memberNickname(member.getMemberNickname())
+                .commentContent(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .build();
+    }
+
+    public void removeComment(Long commentId, Member member) {
+        // 댓글이 존재하는지 확인
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> {
+            throw new IllegalArgumentException("해당 댓글이 존재하지 않습니다. commentId: " + commentId);
+        });
+
+        // 댓글 작성자와 로그인한 사용자가 일치하는지 확인
+        if (!comment.getMember().getId().equals(member.getId())) {
+            throw new RuntimeException("댓글 작성자만 삭제할 수 있습니다.");
+        }
+
+        // 삭제
+        commentRepository.delete(comment);
     }
 }

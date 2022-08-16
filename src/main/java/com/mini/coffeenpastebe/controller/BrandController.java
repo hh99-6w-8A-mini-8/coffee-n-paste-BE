@@ -15,26 +15,26 @@ import javax.servlet.http.HttpServletRequest;
 public class BrandController {
     private final BrandService brandService;
 
-    @PostMapping("api/brand")
+    @PostMapping("/api/brand")
     public ResponseEntity<?> create(@RequestBody BrandRequestDto brandRequestDto) {
         if (brandRequestDto.getBrandName() == null || brandRequestDto.getBrandImg() == null)
             return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
        return new ResponseEntity<>(brandService.create(brandRequestDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("api/brand/{id}")
+    @PutMapping("/api/brand/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody BrandRequestDto brandRequestDto) {
         if (brandRequestDto.getBrandName() == null || brandRequestDto.getBrandImg() == null)
             return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(brandService.update(id, brandRequestDto), HttpStatus.OK) ;
     }
 
-    @DeleteMapping("api/brand/{id}")
+    @DeleteMapping("/api/brand/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         return new ResponseEntity<>(brandService.delete(id), HttpStatus.OK);
     }
 
-    @GetMapping("api/brand")
+    @GetMapping("/api/brand")
     public ResponseEntity<?> findAll() {
         return new ResponseEntity<>(brandService.findBrandList(), HttpStatus.OK);
     }

@@ -39,11 +39,10 @@ public class Post extends Timestamped {
 
     public void update(PostRequestDto postRequestDto) {
         this.content = postRequestDto.getContent();
-        this.postImg = postRequestDto.getPostImg();
     }
 
     public boolean validateMember(Member member) {
-        return !this.member.equals(member);
+        return !this.member.getId().equals(member.getId());
     }
 
 }

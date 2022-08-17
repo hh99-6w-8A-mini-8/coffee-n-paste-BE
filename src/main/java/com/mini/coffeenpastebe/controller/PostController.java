@@ -3,16 +3,21 @@ package com.mini.coffeenpastebe.controller;
 import com.amazonaws.transform.MapEntry;
 import com.mini.coffeenpastebe.domain.UserDetailsImpl;
 import com.mini.coffeenpastebe.domain.member.Member;
+import com.mini.coffeenpastebe.domain.post.dto.PostBasicResponseDto;
 import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
 import com.mini.coffeenpastebe.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -46,8 +51,11 @@ public class PostController {
 
     // Todo :: 메인페이지 전체리뷰 리스트
     @RequestMapping(value = "/api/posts", method = RequestMethod.GET)
-    public ResponseEntity<?> findAll() {
-        return new ResponseEntity<>(postService.findAll(), HttpStatus.OK);
+    public ResponseEntity<?> findAllPageable(
+            @PageableDefault Pageable pageable
+    ) {
+        Page<PostBasicResponseDto> posts = postService.findAll(pageable);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     // Todo :: 나의 게시글 불러오기

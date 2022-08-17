@@ -13,6 +13,7 @@ import com.mini.coffeenpastebe.repository.CommentRepository;
 import com.mini.coffeenpastebe.repository.MenuRepository;
 import com.mini.coffeenpastebe.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,14 +92,13 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostBasicResponseDto> findAll() {
+    public Page<PostBasicResponseDto> findAll(Pageable pageable) {
 
-        List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
+        Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
         List<PostBasicResponseDto> posts = new ArrayList<>();
 
         for (Post post : postList) {
-
             posts.add(
                     PostBasicResponseDto.builder()
                             .postId(post.getId())
@@ -112,7 +112,7 @@ public class PostService {
             );
         }
 
-        return posts;
+        return new PageImpl(posts, postList.getPageable(), postList.getTotalElements());
     }
 
     @Transactional(readOnly = true)

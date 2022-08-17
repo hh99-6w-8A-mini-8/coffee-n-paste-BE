@@ -60,9 +60,13 @@ public class PostController {
 
     // Todo :: 나의 게시글 불러오기
     @RequestMapping(value = "/api/my-post", method = RequestMethod.GET)
-    public ResponseEntity<?> findAllMy(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> findAllMy(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PageableDefault Pageable pageable
+    ) {
         Member member = ((UserDetailsImpl) userDetails).getMember();
-        return new ResponseEntity<>(postService.findAllMy(member), HttpStatus.OK);
+        Page<PostBasicResponseDto> posts = postService.findAllMy(member, pageable);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     // Todo :: 브랜드의 모든 리뷰 불러오기

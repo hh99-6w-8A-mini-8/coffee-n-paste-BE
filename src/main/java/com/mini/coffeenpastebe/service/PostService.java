@@ -92,6 +92,32 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public Page<PostBasicResponseDto> brandMenuPostList(String brandName, String menuName, Pageable pageable) {
+
+        Brand brand = isPresentBrand(brandName);
+
+        Page<Post> postList = postRepository.findAllByMenu_BrandAndMenu_MenuName(brand, menuName, pageable);
+
+        List<PostBasicResponseDto> posts = new ArrayList<>();
+
+        for (Post post : postList) {
+            posts.add(
+                    PostBasicResponseDto.builder()
+                            .postId(post.getId())
+                            .memberName(post.getMember().getMemberName())
+                            .memberNickname(post.getMember().getMemberNickname())
+                            .brandName(post.getMenu().getBrand().getBrandName())
+                            .menuName(post.getMenu().getMenuName())
+                            .postImg(post.getPostImg())
+                            .createAt(post.getCreatedAt())
+                            .build()
+            );
+        }
+
+        return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
     public Page<PostBasicResponseDto> findAll(Pageable pageable) {
 
         Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);

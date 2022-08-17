@@ -1,13 +1,11 @@
 package com.mini.coffeenpastebe.controller;
 
-import com.amazonaws.transform.MapEntry;
 import com.mini.coffeenpastebe.domain.UserDetailsImpl;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.post.dto.PostBasicResponseDto;
 import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
 import com.mini.coffeenpastebe.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -17,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,6 +46,20 @@ public class PostController {
         return new ResponseEntity<>(postService.read(postId), HttpStatus.OK);
     }
 
+    // Todo :: 메뉴별 게시글 전체조회
+    @RequestMapping(value = "/api/post", method = RequestMethod.GET)
+    public ResponseEntity<?> brandMenuPostListPageable(
+            @RequestParam("brand") String brandName, @RequestParam(required = false, value = "menu") String menuName, @PageableDefault Pageable pageable) {
+        Page<PostBasicResponseDto> posts;
+        if (menuName == null) {
+            posts = postService.findAllByBrand(brandName, pageable);
+        }
+        else {
+            posts = postService.brandMenuPostList(brandName, menuName, pageable);
+        }
+        return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
+
     // Todo :: 메인페이지 전체리뷰 리스트
     @RequestMapping(value = "/api/posts", method = RequestMethod.GET)
     public ResponseEntity<?> findAllPageable(
@@ -66,14 +77,6 @@ public class PostController {
     ) {
         Member member = ((UserDetailsImpl) userDetails).getMember();
         Page<PostBasicResponseDto> posts = postService.findAllMy(member, pageable);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
-    }
-
-    // Todo :: 브랜드의 모든 리뷰 불러오기
-    @RequestMapping(value = "/api/post", method = RequestMethod.GET)
-    public ResponseEntity<?> findAllByBrand(@RequestParam("brand") String brand,
-                                            @PageableDefault Pageable pageable) {
-        Page<PostBasicResponseDto> posts = postService.findAllByBrand(brand,pageable);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 

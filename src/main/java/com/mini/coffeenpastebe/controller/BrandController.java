@@ -1,14 +1,11 @@
 package com.mini.coffeenpastebe.controller;
 
-import com.mini.coffeenpastebe.domain.ResponseDto;
 import com.mini.coffeenpastebe.domain.brand.dto.BrandRequestDto;
 import com.mini.coffeenpastebe.service.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,14 +16,14 @@ public class BrandController {
     public ResponseEntity<?> create(@RequestBody BrandRequestDto brandRequestDto) {
         if (brandRequestDto.getBrandName() == null || brandRequestDto.getBrandImg() == null)
             return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
-       return new ResponseEntity<>(brandService.create(brandRequestDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(brandService.create(brandRequestDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/api/brand/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody BrandRequestDto brandRequestDto) {
         if (brandRequestDto.getBrandName() == null || brandRequestDto.getBrandImg() == null)
             return new ResponseEntity<>("정보를 모두 입력해주세요.", HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(brandService.update(id, brandRequestDto), HttpStatus.OK) ;
+        return new ResponseEntity<>(brandService.update(id, brandRequestDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/brand/{id}")

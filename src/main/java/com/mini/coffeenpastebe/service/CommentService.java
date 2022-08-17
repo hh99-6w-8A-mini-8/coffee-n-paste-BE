@@ -25,23 +25,27 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     // Comment List 조회
-    public List<CommentListResponseDto> getComment(Long postId) {
+    public CommentListResponseDto getComment(Long postId) {
+        // 게시글 찾기
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
+        // 게시글에 달린 댓글들 뽑기
         List<Comment> comments = commentRepository.findByPost_Id(post.getId());
-        List<CommentListResponseDto> commentListResponseDto = new ArrayList<>();
 
-        for (Comment comment : comments) {
-            commentListResponseDto.add(
-                    CommentListResponseDto.builder()
-                            .postId(postId)
-                            .comments(commentRepository.findByPost_Id(comment.getPost().getId()).stream().map(CommentResponseDto::new).collect(Collectors.toList()))
-                            .build()
-            );
-        }
+        // responseDto 변환
+        List<CommentResponseDto> commentResponseDtos = comments.stream()
+                .map(CommentResponseDto::new)
+                .collect(Collectors.toList());
+
+        // ListResponseDto 변환
+        CommentListResponseDto commentListResponseDto = CommentListResponseDto.builder()
+                .postId(postId)
+                .comments(commentResponseDtos)
+                .build();
+
+        // 리턴
         return commentListResponseDto;
-
     }
 
     // Comment 수정
@@ -56,15 +60,8 @@ public class CommentService {
         }
         comment.update(commentRequestDto);
 
-        CommentResponseDto commentResponseDto = CommentResponseDto.builder()
-                .commentId(comment.getId())
-                .memberName(comment.getMember().getMemberName())
-                .memberNickname(comment.getMember().getMemberNickname())
-                .commentContent(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .build();
-
-        return commentResponseDto;
+        CommentResponseDto responseDto = getCommentResponseDto(comment, member);
+        return responseDto;
     }
 
     public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, Member member) {
@@ -85,13 +82,8 @@ public class CommentService {
         commentRepository.save(comment);
 
         // commentResponseDto로 리턴
-        return CommentResponseDto.builder()
-                .commentId(comment.getId())
-                .memberName(member.getMemberName())
-                .memberNickname(member.getMemberNickname())
-                .commentContent(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .build();
+        CommentResponseDto responseDto = getCommentResponseDto(comment, member);
+        return responseDto;
     }
 
     public void removeComment(Long commentId, Member member) {
@@ -107,5 +99,15 @@ public class CommentService {
 
         // 삭제
         commentRepository.delete(comment);
+    }
+
+    private CommentResponseDto getCommentResponseDto(Comment comment, Member member) {
+        return CommentResponseDto.builder()
+                .commentId(comment.getId())
+                .memberName(member.getMemberName())
+                .memberNickname(member.getMemberNickname())
+                .commentContent(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .build();
     }
 }

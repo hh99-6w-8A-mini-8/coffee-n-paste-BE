@@ -24,7 +24,7 @@ public class CommentController {
     // Comment 조회
     @GetMapping("/api/comment")
     public ResponseEntity<?> getComment(@RequestParam("post-id") Long postId) {
-        List<CommentListResponseDto> commentResponseDto = commentService.getComment(postId);
+        CommentListResponseDto commentResponseDto = commentService.getComment(postId);
 
         return ResponseEntity.ok()
                 .body(commentResponseDto);

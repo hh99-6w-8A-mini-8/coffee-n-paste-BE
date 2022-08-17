@@ -83,7 +83,8 @@ public class PostController {
     @RequestMapping(value = "/api/post/{postId}")
     public ResponseEntity<?> delete(@PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails) {
         Member member = ((UserDetailsImpl) userDetails).getMember();
-        return new ResponseEntity<>(postService.delete(postId, member), HttpStatus.OK);
+        String deleteMessage = postService.delete(postId, member);
+        return new ResponseEntity<>(Map.of("msg", deleteMessage), HttpStatus.OK);
     }
 
 }

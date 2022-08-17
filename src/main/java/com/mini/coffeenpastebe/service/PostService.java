@@ -13,7 +13,9 @@ import com.mini.coffeenpastebe.repository.CommentRepository;
 import com.mini.coffeenpastebe.repository.MenuRepository;
 import com.mini.coffeenpastebe.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +37,7 @@ public class PostService {
     public Long create(PostRequestDto postRequestDto, Member member) {
 
         Brand brand = brandRepository.findById(postRequestDto.getBrandId()).orElseThrow(
-                ()->new IllegalArgumentException("등록되지 않은 브랜드입니다."));
+                () -> new IllegalArgumentException("등록되지 않은 브랜드입니다."));
         Menu menu = isPresentMenu(postRequestDto.getMenuId(), brand);
 
         Post post = Post.builder()
@@ -59,17 +61,7 @@ public class PostService {
 
         post.update(postRequestDto);
 
-        return PostDetailsResponseDto.builder()
-                .postId(post.getId())
-                .memberName(post.getMember().getMemberName())
-                .memberNickName(post.getMember().getMemberNickname())
-                .brandName(post.getMenu().getBrand().getBrandName())
-                .menuName(post.getMenu().getMenuName())
-                .postContent(post.getContent())
-                .postImg(post.getPostImg())
-                .createAt(post.getCreatedAt())
-                .comments(commentRepository.findByPost_Id(post.getId()).stream().map(CommentResponseDto::new).collect(Collectors.toList()))
-                .build();
+        return getPostDetailsResponseDto(post);
     }
 
     @Transactional(readOnly = true)
@@ -77,18 +69,7 @@ public class PostService {
 
         Post post = isPresentPost(postId);
 
-        return PostDetailsResponseDto.builder()
-                .postId(post.getId())
-                .memberName(post.getMember().getMemberName())
-                .memberNickName(post.getMember().getMemberNickname())
-                .brandName(post.getMenu().getBrand().getBrandName())
-                .menuName(post.getMenu().getMenuName())
-                .postContent(post.getContent())
-                .postImg(post.getPostImg())
-                .createAt(post.getCreatedAt())
-                .comments(commentRepository.findByPost_Id(post.getId()).stream().map(CommentResponseDto::new).collect(Collectors.toList()))
-                .build();
-        // comment 완료시 추가.
+        return getPostDetailsResponseDto(post);
     }
 
     @Transactional(readOnly = true)
@@ -98,23 +79,9 @@ public class PostService {
 
         Page<Post> postList = postRepository.findAllByMenu_BrandAndMenu_MenuName(brand, menuName, pageable);
 
-        List<PostBasicResponseDto> posts = new ArrayList<>();
+        Page<PostBasicResponseDto> postBasicResponseDtos = convertToBasicResponseDto(postList);
 
-        for (Post post : postList) {
-            posts.add(
-                    PostBasicResponseDto.builder()
-                            .postId(post.getId())
-                            .memberName(post.getMember().getMemberName())
-                            .memberNickname(post.getMember().getMemberNickname())
-                            .brandName(post.getMenu().getBrand().getBrandName())
-                            .menuName(post.getMenu().getMenuName())
-                            .postImg(post.getPostImg())
-                            .createAt(post.getCreatedAt())
-                            .build()
-            );
-        }
-
-        return new PageImpl<>(posts, postList.getPageable(), postList.getTotalElements());
+        return postBasicResponseDtos;
     }
 
     @Transactional(readOnly = true)
@@ -122,23 +89,9 @@ public class PostService {
 
         Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        List<PostBasicResponseDto> posts = new ArrayList<>();
+        Page<PostBasicResponseDto> postBasicResponseDtos = convertToBasicResponseDto(postList);
 
-        for (Post post : postList) {
-            posts.add(
-                    PostBasicResponseDto.builder()
-                            .postId(post.getId())
-                            .memberName(post.getMember().getMemberName())
-                            .memberNickname(post.getMember().getMemberNickname())
-                            .brandName(post.getMenu().getBrand().getBrandName())
-                            .menuName(post.getMenu().getMenuName())
-                            .postImg(post.getPostImg())
-                            .createAt(post.getCreatedAt())
-                            .build()
-            );
-        }
-
-        return new PageImpl(posts, postList.getPageable(), postList.getTotalElements());
+        return postBasicResponseDtos;
     }
 
     @Transactional(readOnly = true)
@@ -146,31 +99,53 @@ public class PostService {
 
         Page<Post> postList = postRepository.findAllByMember(member, pageable);
 
-        List<PostBasicResponseDto> posts = new ArrayList<>();
+        Page<PostBasicResponseDto> postBasicResponseDtos = convertToBasicResponseDto(postList);
 
-        for (Post post : postList) {
-            posts.add(
-                    PostBasicResponseDto.builder()
-                            .postId(post.getId())
-                            .memberName(post.getMember().getMemberName())
-                            .memberNickname(post.getMember().getMemberNickname())
-                            .brandName(post.getMenu().getBrand().getBrandName())
-                            .menuName(post.getMenu().getMenuName())
-                            .postImg(post.getPostImg())
-                            .createAt(post.getCreatedAt())
-                            .build()
-            );
-        }
-
-        return new PageImpl(posts, postList.getPageable(), postList.getTotalElements());
+        return postBasicResponseDtos;
     }
 
     @Transactional(readOnly = true)
     public Page<PostBasicResponseDto> findAllByBrand(String brandName, Pageable pageable) {
         Brand brandSelected = isPresentBrand(brandName);
 
-        Page<Post> postList =  postRepository.findAllByMenu_Brand(brandSelected, pageable);
+        Page<Post> postList = postRepository.findAllByMenu_Brand(brandSelected, pageable);
 
+        Page<PostBasicResponseDto> postBasicResponseDtos = convertToBasicResponseDto(postList);
+
+        return postBasicResponseDtos;
+    }
+
+    @Transactional
+    public String delete(Long postId, Member member) {
+        Post post = isPresentPost(postId);
+
+        if (post.validateMember(member)) {
+            throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 권한이 있습니다");
+        }
+        postRepository.delete(post);
+        return "게시물이 정상적으로 삭제되었습니다.";
+    }
+
+    private PostDetailsResponseDto getPostDetailsResponseDto(Post post) {
+        return PostDetailsResponseDto.builder()
+                .postId(post.getId())
+                .memberName(post.getMember().getMemberName())
+                .memberNickName(post.getMember().getMemberNickname())
+                .brandName(post.getMenu().getBrand().getBrandName())
+                .menuName(post.getMenu().getMenuName())
+                .postContent(post.getContent())
+                .postImg(post.getPostImg())
+                .createAt(post.getCreatedAt())
+                .comments(
+                        commentRepository.findByPost_Id(post.getId())
+                                .stream()
+                                .map(CommentResponseDto::new)
+                                .collect(Collectors.toList())
+                )
+                .build();
+    }
+
+    private Page<PostBasicResponseDto> convertToBasicResponseDto(Page<Post> postList) {
         List<PostBasicResponseDto> posts = new ArrayList<>();
 
         for (Post post : postList) {
@@ -186,19 +161,7 @@ public class PostService {
                             .build()
             );
         }
-
         return new PageImpl(posts, postList.getPageable(), postList.getTotalElements());
-    }
-
-    @Transactional
-    public String delete(Long postId, Member member) {
-        Post post = isPresentPost(postId);
-
-        if(post.validateMember(member)) {
-            throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 권한이 있습니다");
-        }
-        postRepository.delete(post);
-        return "게시물이 정상적으로 삭제되었습니다.";
     }
 
     @Transactional(readOnly = true)
@@ -216,7 +179,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public Post isPresentPost(Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
-        return optionalPost.orElseThrow(()-> new IllegalArgumentException("등록되지 않은 게시물입니다."));
+        return optionalPost.orElseThrow(() -> new IllegalArgumentException("등록되지 않은 게시물입니다."));
     }
 
 }

@@ -26,10 +26,9 @@ public class BrandResponseDto {
     }
 
     public List<MenuResponseDto> toMenuResponseDto(List<Menu> menuList) {
-        return menuList.stream().map(menu -> MenuResponseDto.builder()
-                .menuId(menu.getId())
-                .menuName(menu.getMenuName())
-                .build()).collect(Collectors.toList());
+        return menuList.stream()
+                .map(MenuResponseDto::new)
+                .collect(Collectors.toList());
     }
 
 }

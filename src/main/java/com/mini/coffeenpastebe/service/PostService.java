@@ -116,9 +116,9 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostBasicResponseDto> findAllMy(Member member) {
+    public Page<PostBasicResponseDto> findAllMy(Member member, Pageable pageable) {
 
-        List<Post> postList = postRepository.findAllByMember(member);
+        Page<Post> postList = postRepository.findAllByMember(member, pageable);
 
         List<PostBasicResponseDto> posts = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class PostService {
             );
         }
 
-        return posts;
+        return new PageImpl(posts, postList.getPageable(), postList.getTotalElements());
     }
 
     @Transactional(readOnly = true)

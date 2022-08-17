@@ -13,7 +13,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    List<Post> findAllByMember(Member member);
+    Page<Post> findAllByMember(Member member, Pageable pageable);
 
     List<Post> findAllByMenu_Brand(Brand brandSelected);
 }

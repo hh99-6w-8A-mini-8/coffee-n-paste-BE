@@ -69,11 +69,11 @@ public class TokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-
-        RefreshToken refreshTokenObject = RefreshToken.builder()
-                .member(member)
-                .tokenValue(refreshToken)
-                .build();
+        RefreshToken refreshTokenObject = refreshTokenRepository.findByMember(member)
+                .orElse(RefreshToken.builder()
+                        .member(member)
+                        .build());
+        refreshTokenObject.updateTokenValue(refreshToken);
 
         refreshTokenRepository.save(refreshTokenObject);
 
@@ -90,7 +90,7 @@ public class TokenProvider {
 
         UserDetails principal = userDetailsService.loadUserByUsername(memberName);
 
-        return new UsernamePasswordAuthenticationToken(principal, "",null);
+        return new UsernamePasswordAuthenticationToken(principal, "", null);
     }
 
     public Member getMemberFromAuthentication() {

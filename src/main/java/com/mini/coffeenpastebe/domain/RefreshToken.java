@@ -25,4 +25,8 @@ public class RefreshToken {
 
     @Column(nullable = false)
     private String tokenValue;
+
+    public void updateTokenValue(String refreshToken) {
+        this.tokenValue = refreshToken;
+    }
 }

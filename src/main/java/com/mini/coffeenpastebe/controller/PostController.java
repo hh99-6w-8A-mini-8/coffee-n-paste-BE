@@ -71,8 +71,10 @@ public class PostController {
 
     // Todo :: 브랜드의 모든 리뷰 불러오기
     @RequestMapping(value = "/api/post", method = RequestMethod.GET)
-    public ResponseEntity<?> findAllByBrand(@RequestParam("brand") String brand) {
-        return new ResponseEntity<>(postService.findAllByBrand(brand), HttpStatus.OK);
+    public ResponseEntity<?> findAllByBrand(@RequestParam("brand") String brand,
+                                            @PageableDefault Pageable pageable) {
+        Page<PostBasicResponseDto> posts = postService.findAllByBrand(brand,pageable);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/api/post/{postId}")

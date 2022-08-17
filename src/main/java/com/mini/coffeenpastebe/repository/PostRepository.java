@@ -15,5 +15,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByMember(Member member, Pageable pageable);
 
-    List<Post> findAllByMenu_Brand(Brand brandSelected);
+    Page<Post> findAllByMenu_Brand(Brand brandSelected, Pageable pageable);
 }

@@ -3,13 +3,13 @@ package com.mini.coffeenpastebe.domain.brand.dto;
 import com.mini.coffeenpastebe.domain.brand.Brand;
 import com.mini.coffeenpastebe.domain.menu.Menu;
 import com.mini.coffeenpastebe.domain.menu.dto.MenuResponseDto;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 public class BrandResponseDto {

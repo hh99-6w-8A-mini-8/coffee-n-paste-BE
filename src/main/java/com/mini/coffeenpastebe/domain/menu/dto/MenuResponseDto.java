@@ -1,10 +1,10 @@
 package com.mini.coffeenpastebe.domain.menu.dto;
 
 import com.mini.coffeenpastebe.domain.menu.Menu;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Builder
 public class MenuResponseDto {

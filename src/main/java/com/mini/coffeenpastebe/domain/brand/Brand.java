@@ -30,7 +30,7 @@ public class Brand {
     private String brandImg;
 
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Menu> menuList;
+    private final List<Menu> menuList = new ArrayList<>();
 
     public void update (BrandRequestDto brandRequestDto) {
         this.brandName = brandRequestDto.getBrandName();

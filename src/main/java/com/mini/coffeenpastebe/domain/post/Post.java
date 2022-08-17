@@ -40,7 +40,7 @@ public class Post extends Timestamped {
     private String postImg;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
 
     public void update(PostRequestDto postRequestDto) {
         this.content = postRequestDto.getContent();

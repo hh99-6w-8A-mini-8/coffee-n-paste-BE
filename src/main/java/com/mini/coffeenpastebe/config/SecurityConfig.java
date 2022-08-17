@@ -79,6 +79,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/brands").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/comment").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
                 // h2 - console 허용
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated();

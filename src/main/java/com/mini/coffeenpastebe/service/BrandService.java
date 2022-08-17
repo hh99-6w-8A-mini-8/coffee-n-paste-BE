@@ -23,23 +23,25 @@ public class BrandService {
 
     // Todo :: 브랜드 등록
     @Transactional
-    public Brand create(BrandRequestDto brandRequestDto) {
+    public BrandResponseDto create(BrandRequestDto brandRequestDto) {
 
         Brand brand = Brand.builder()
                 .brandName(brandRequestDto.getBrandName())
                 .brandImg(brandRequestDto.getBrandImg())
                 .build();
 
-        return brandRepository.save(brand);
+        Brand brandSaved = brandRepository.save(brand);
+
+        return new BrandResponseDto(brandSaved);
     }
 
     // Todo :: 브랜드 이미지 수정
     @Transactional
-    public Brand update(Long id, BrandRequestDto brandRequestDto){
+    public BrandResponseDto update(Long id, BrandRequestDto brandRequestDto){
         Brand brand = isPresentBrand(id);
         brand.update(brandRequestDto);
         Brand updatedBrand = isPresentBrand(id);
-        return updatedBrand;
+        return new BrandResponseDto(updatedBrand);
     }
 
     // Todo :: 브랜드 삭제

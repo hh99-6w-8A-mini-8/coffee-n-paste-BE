@@ -1,5 +1,6 @@
 package com.mini.coffeenpastebe.controller;
 
+import com.amazonaws.transform.MapEntry;
 import com.mini.coffeenpastebe.domain.UserDetailsImpl;
 import com.mini.coffeenpastebe.domain.member.Member;
 import com.mini.coffeenpastebe.domain.post.dto.PostRequestDto;
@@ -12,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class PostController {
@@ -23,9 +26,9 @@ public class PostController {
     public ResponseEntity<?> create(@RequestBody PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
         Member member =  ((UserDetailsImpl) userDetails).getMember();
 
-        postService.create(postRequestDto, member);
+        Long postId = postService.create(postRequestDto, member);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(Map.entry("postId", postId));
     }
 
     // Todo :: 게시글 단건 수정 --> 추후 commentList 추가 (PostAndCommentDto)

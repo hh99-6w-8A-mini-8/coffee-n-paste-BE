@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MenuService {
@@ -46,14 +47,14 @@ public class MenuService {
 
     // Todo :: 메뉴 업데이트
     @Transactional
-    public Menu update(String brandName, Long menuId, MenuRequestDto menuRequestDto) {
+    public MenuResponseDto update(String brandName, Long menuId, MenuRequestDto menuRequestDto) {
 
         Brand brand = isPresentBrand(brandName);
 
         Menu menu = isPresentMenu(menuId, brand);
 
         menu.update(menuRequestDto);
-        return isPresentMenu(menu.getId(), menu.getBrand());
+        return new MenuResponseDto(menu);
     }
 
     // Todo :: 메뉴 삭제
@@ -71,11 +72,11 @@ public class MenuService {
 
     // Todo :: 브랜드 메뉴 조회
     @Transactional(readOnly = true)
-    public List<Menu> findAll(String brandName) {
+    public List<MenuResponseDto> findAll(String brandName) {
 
         Brand brand = isPresentBrand(brandName);
 
-        return menuRepository.findByBrand(brand);
+        return menuRepository.findByBrand(brand).stream().map(MenuResponseDto::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

@@ -31,7 +31,7 @@ public class PostService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Post create(PostRequestDto postRequestDto, Member member) {
+    public Long create(PostRequestDto postRequestDto, Member member) {
 
         Brand brand = brandRepository.findById(postRequestDto.getBrandId()).orElseThrow(
                 ()->new IllegalArgumentException("등록되지 않은 브랜드입니다."));
@@ -44,7 +44,7 @@ public class PostService {
                 .postImg(postRequestDto.getPostImg())
                 .build();
 
-        return postRepository.save(post);
+        return postRepository.save(post).getId();
     }
 
     @Transactional

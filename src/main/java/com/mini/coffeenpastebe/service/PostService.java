@@ -140,12 +140,11 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostBasicResponseDto> findAllByBrand(String brandName) {
+    public Page<PostBasicResponseDto> findAllByBrand(String brandName, Pageable pageable) {
         Brand brandSelected = isPresentBrand(brandName);
-        if (brandSelected == null) {
-            throw new IllegalArgumentException("해당 브랜드가 존재하지 않습니다");
-        }
-        List<Post> postList =  postRepository.findAllByMenu_Brand(brandSelected);
+
+        Page<Post> postList =  postRepository.findAllByMenu_Brand(brandSelected, pageable);
+
         List<PostBasicResponseDto> posts = new ArrayList<>();
 
         for (Post post : postList) {
@@ -162,7 +161,7 @@ public class PostService {
             );
         }
 
-        return posts;
+        return new PageImpl(posts, postList.getPageable(), postList.getTotalElements());
     }
 
     @Transactional

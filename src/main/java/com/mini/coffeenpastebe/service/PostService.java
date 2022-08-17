@@ -77,7 +77,7 @@ public class PostService {
 
         Brand brand = isPresentBrand(brandName);
 
-        Page<Post> postList = postRepository.findAllByMenu_BrandAndMenu_MenuName(brand, menuName, pageable);
+        Page<Post> postList = postRepository.findAllByMenu_BrandAndMenu_MenuNameOrderByCreatedAtDesc(brand, menuName, pageable);
 
         Page<PostBasicResponseDto> postBasicResponseDtos = convertToBasicResponseDto(postList);
 
@@ -97,7 +97,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<PostBasicResponseDto> findAllMy(Member member, Pageable pageable) {
 
-        Page<Post> postList = postRepository.findAllByMember(member, pageable);
+        Page<Post> postList = postRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
 
         Page<PostBasicResponseDto> postBasicResponseDtos = convertToBasicResponseDto(postList);
 
@@ -108,7 +108,7 @@ public class PostService {
     public Page<PostBasicResponseDto> findAllByBrand(String brandName, Pageable pageable) {
         Brand brandSelected = isPresentBrand(brandName);
 
-        Page<Post> postList = postRepository.findAllByMenu_Brand(brandSelected, pageable);
+        Page<Post> postList = postRepository.findAllByMenu_BrandOrderByCreatedAtDesc(brandSelected, pageable);
 
         Page<PostBasicResponseDto> postBasicResponseDtos = convertToBasicResponseDto(postList);
 

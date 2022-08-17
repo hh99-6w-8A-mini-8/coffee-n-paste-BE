@@ -49,7 +49,10 @@ public class PostController {
     // Todo :: 메뉴별 게시글 전체조회
     @RequestMapping(value = "/api/post", method = RequestMethod.GET)
     public ResponseEntity<?> brandMenuPostListPageable(
-            @RequestParam("brand") String brandName, @RequestParam(required = false, value = "menu") String menuName, @PageableDefault Pageable pageable) {
+            @RequestParam("brand") String brandName,
+            @RequestParam(required = false, value = "menu") String menuName,
+            @PageableDefault(size=20) Pageable pageable
+    ) {
         Page<PostBasicResponseDto> posts;
         if (menuName == null) {
             posts = postService.findAllByBrand(brandName, pageable);
@@ -63,7 +66,7 @@ public class PostController {
     // Todo :: 메인페이지 전체리뷰 리스트
     @RequestMapping(value = "/api/posts", method = RequestMethod.GET)
     public ResponseEntity<?> findAllPageable(
-            @PageableDefault Pageable pageable
+            @PageableDefault(size=20) Pageable pageable
     ) {
         Page<PostBasicResponseDto> posts = postService.findAll(pageable);
         return new ResponseEntity<>(posts, HttpStatus.OK);
@@ -73,7 +76,7 @@ public class PostController {
     @RequestMapping(value = "/api/my-post", method = RequestMethod.GET)
     public ResponseEntity<?> findAllMy(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PageableDefault Pageable pageable
+            @PageableDefault(size=20) Pageable pageable
     ) {
         Member member = ((UserDetailsImpl) userDetails).getMember();
         Page<PostBasicResponseDto> posts = postService.findAllMy(member, pageable);

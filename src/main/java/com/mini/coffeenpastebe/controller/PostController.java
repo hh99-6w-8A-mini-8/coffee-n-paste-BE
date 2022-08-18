@@ -83,7 +83,7 @@ public class PostController {
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/post/{postId}")
+    @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails) {
         Member member = ((UserDetailsImpl) userDetails).getMember();
         String deleteMessage = postService.delete(postId, member);
